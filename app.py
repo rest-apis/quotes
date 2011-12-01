@@ -16,8 +16,16 @@ def application(environ, response_callback):
     status = "200 OK"
     if environ['REQUEST_METHOD'] == 'GET':
         path = environ['PATH_INFO']
+        query_dict = parse_qs(environ['QUERY_STRING'])
+        limit = 0
+        if 'limit' in query_dict:
+            limit = int(query_dict['limit'][0])
         if path == '/quotes':
-            response = "\n".join(["%s -- %s"%(quote['content'], quote['author']) for quote in QUOTES])
+            quotes = ["%s -- %s"%(quote['content'], quote['author']) for quote in QUOTES]
+            if limit:
+                response = "\n".join(quotes[:limit])
+            else:
+                response = "\n".join(quotes)
     else:
         status = "405 Not Allowed"
     response_callback(
