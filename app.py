@@ -1,5 +1,6 @@
 from cgi import parse_qs
 from wsgiref.simple_server import make_server
+import re
 QUOTES = [
     {'author': 'Ken Thompson' , 'content': 'When in doubt, use brute force'},
     {'author': 'Brian W. Kernighan' , 'content': 'The most effective debugging tool is still careful thought, coupled with judiciously placed print statements'},
@@ -26,6 +27,13 @@ def application(environ, response_callback):
                 response = "\n".join(quotes[:limit])
             else:
                 response = "\n".join(quotes)
+        if re.match('/authors/(\w)+', path):
+            author = re.match('/authors/(\w+)', path).groups(1)[0]
+            quotes = []
+            for quote in QUOTES:
+                if author.lower() in quote['author'].lower():
+                    quotes.append("%s -- %s" % (quote['content'], quote['author']))
+            response = "\n".join(quotes)
     else:
         status = "405 Not Allowed"
     response_callback(
