@@ -18,15 +18,9 @@ def application(environ, response_callback):
     if environ['REQUEST_METHOD'] == 'GET':
         path = environ['PATH_INFO']
         query_dict = parse_qs(environ['QUERY_STRING'])
-        limit = 0
-        if 'limit' in query_dict:
-            limit = int(query_dict['limit'][0])
         if path == '/quotes':
             quotes = ["%s -- %s"%(quote['content'], quote['author']) for quote in QUOTES]
-            if limit:
-                response = "\n".join(quotes[:limit])
-            else:
-                response = "\n".join(quotes)
+            response = "\n".join(quotes)
         if re.match('/authors/(\w)+', path):
             author = re.match('/authors/(\w+)', path).groups(1)[0]
             quotes = []
